@@ -27,7 +27,6 @@ typedef enum stateTypeEnum{
 } stateType;
 
 volatile stateType state;
-volatile int colNum;
 volatile int xlcdPos;
 volatile int ylcdPos;
 volatile int temp;
@@ -62,7 +61,7 @@ int main(void)
                 }
                 else
                 {
-                    printCharLCD(keyScan);
+                    printCharLCD(keyScan+'0');
                     xlcdPos++;
                     if(xlcdPos==8)
                     {
@@ -77,10 +76,7 @@ int main(void)
                 break;
             case debouncePress:
                 delayMs(5);
-                if(colNum!=-1)
-                    state = write;
-                else
-                    state = wait;
+                state = write;
                 break;
             case debounceRelease:
                 delayMs(5);
@@ -90,6 +86,7 @@ int main(void)
     }
     
     return 0;
+     
 }
 
 void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void)
@@ -97,6 +94,12 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void)
     IFS1bits.CNAIF = 0;
     IFS1bits.CNGIF = 0;
     temp = PORT_0;temp2 = PORT_1;temp3 = PORT_2;
+    if ((temp==RELEASE)&(temp2==RELEASE)&(temp3==RELEASE))
+        state = debounceRelease;
+    else
+        state = debouncePress;
+    
+    /*
     if((temp==PRESS)&(temp2==RELEASE)&(temp3==RELEASE))
         colNum = 1;
     else if((temp==RELEASE)&(temp2==PRESS)&(temp3==RELEASE))
@@ -112,4 +115,5 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void)
         colNum = -1;
     if(state!=debounceRelease)
         state = debouncePress;
+     * */
 }
