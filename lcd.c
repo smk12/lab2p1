@@ -193,7 +193,7 @@ void initLCD(void) {
     E = 0;
     delayUs(1);
     
-    RS = 0;DB7 = 1;DB6 = 1;DB5 = 0;DB4 = 1;     //DB4 1 is cursor blink
+    RS = 0;DB7 = 1;DB6 = 1;DB5 = 0;DB4 = 0;     //DB4 1 is cursor blink
     E = 1;
     delayUs(1);
     E = 0;
