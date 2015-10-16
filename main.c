@@ -61,7 +61,7 @@ int main(void)
                 }
                 else
                 {
-                    printCharLCD(keyScan+'0');
+                    printCharLCD(keyScan);
                     xlcdPos++;
                     if(xlcdPos==8)
                     {
@@ -69,7 +69,7 @@ int main(void)
                         ylcdPos++;
                         if(ylcdPos==2)
                             ylcdPos=0;
-                        moveCursorLCD(xlcdPos, ylcdPos);
+                        moveCursorLCD(ylcdPos, xlcdPos);
                     }
                 }
                 state = wait;
@@ -117,3 +117,4 @@ void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(void)
         state = debouncePress;
      * */
 }
+
