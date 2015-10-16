@@ -24,6 +24,9 @@
 #define PORT_0 PORTAbits.RA6        //read col1 input
 #define PORT_1 PORTAbits.RA7        //read col2 input
 #define PORT_2 PORTGbits.RG1        //read col3 input
+#define CNEN_0 CNENAbits.CNIEA6
+#define CNEN_1 CNENAbits.CNIEA7
+#define CNEN_2 CNENGbits.CNIEG1
 
 #define INPUT 1 
 #define OUTPUT 0
@@ -37,10 +40,10 @@ void initKeypad(void)
     //LAT_0 = 1;LAT_1 = 1;LAT_2 = 1;LAT_3 = 1;
     LAT_0 = 0;LAT_1 = 0;LAT_2 = 0;LAT_3 = 0;        //Button press brings input low. Lat 0 makes outut pins low (0V) and lat 1 makes output pins high (3.3V). ISR is triggered when all lat are 0
     
-    CNCONAbits.ON = 1;CNCONGbits.ON = 1;
-    IEC1bits.CNAIE = 1;IEC1bits.CNGIE = 1;
+    CNCONAbits.ON = 1;CNCONGbits.ON = 1;        //corrisponds to col pin types
+    IEC1bits.CNAIE = 1;IEC1bits.CNGIE = 1;      //corrisponds to col pin types
     
-    CNENAbits.CNIEA6 = 1;CNENAbits.CNIEA7 = 1;CNENGbits.CNIEG1 = 1;
+    CNEN_0 = 1;CNEN_1 = 1;CNEN_2 = 1;
     
     IPC8bits.CNIP = 7;
     IPC8bits.CNIS = 2;
@@ -60,29 +63,47 @@ void initKeypad(void)
 char scanKeypad(void){
     char key = -1;
     int found = 0;
+    int tempo = 0;
     
+    tempo = 1;
     LAT_0 = 0;LAT_1 = 1;LAT_2 = 1;LAT_3 = 1;
-    if(PORT_0 == 0){key = 1;found++;}
-    if(PORT_1 == 0){key = 2;found++;}
-    if(PORT_2 == 0){key = 3;found++;}
+    delayUs(5);
+    //LAT_0 = 1;LAT_1 = 0;LAT_2 = 0;LAT_3 = 0;
+    if(PORT_0 == 0){key = '1';found++;}
+    if(PORT_1 == 0){key = '2';found++;}
+    if(PORT_2 == 0){key = '3';found++;}
     
+    
+    tempo = 1;
     LAT_0 = 1;LAT_1 = 0;LAT_2 = 1;LAT_3 = 1;
-    if(PORT_0 == 0){key = 4;found++;}
-    if(PORT_1 == 0){key = 5;found++;}
-    if(PORT_2 == 0){key = 6;found++;}
+    delayUs(5);
+    //LAT_0 = 0;LAT_1 = 1;LAT_2 = 0;LAT_3 = 0;
+    if(PORT_0 == 0){key = '4';found++;}
+    if(PORT_1 == 0){key = '5';found++;}
+    if(PORT_2 == 0){key = '6';found++;}
     
+    
+    tempo = 1;
     LAT_0 = 1;LAT_1 = 1;LAT_2 = 0;LAT_3 = 1;
-    if(PORT_0 == 0){key = 7;found++;}
-    if(PORT_1 == 0){key = 8;found++;}
-    if(PORT_2 == 0){key = 9;found++;}
+    delayUs(5);
+    //LAT_0 = 0;LAT_1 = 0;LAT_2 = 1;LAT_3 = 0;
+    if(PORT_0 == 0){key = '7';found++;}
+    if(PORT_1 == 0){key = '8';found++;}
+    if(PORT_2 == 0){key = '9';found++;}
     
+    //delayUs(5);
+    //tempo = 1;
     LAT_0 = 1;LAT_1 = 1;LAT_2 = 1;LAT_3 = 0;
-    if(PORT_0 == 0){key = '*';found++;}
-    if(PORT_1 == 0){key = 0;found++;}
-    if(PORT_2 == 0){key = '#';found++;}
+    delayUs(5);
+    //LAT_0 = 0;LAT_1 = 0;LAT_2 = 0;LAT_3 = 1;
+    if(PORT_0 == 0){key = 0x2a;found++;}
+    if(PORT_1 == 0){key = '0';found++;}
+    if(PORT_2 == 0){key = 0x23;found++;}
     
+    tempo = 1;
     if(found>1)
         key = -1;
     LAT_0 = 0;LAT_1 = 0;LAT_2 = 0;LAT_3 = 0;
+    delayUs(5);
     return key;
 }
